@@ -21,20 +21,13 @@ data class LoginRequest(val Username: String, val Password: String)
 @SuppressLint("UnsafeOptInUsageError")
 @Serializable
 data class NuevoInvitadoRequest(
-    @SerialName("Nombre")
+    // El JSON enviado usará estos nombres en minúscula por defecto
     val nombre: String,
-
-    @SerialName("Apellidos")
     val apellidos: String,
-
-    // El email no está en el modelo del backend, lo eliminamos.
-
-    @SerialName("Telefono")
     val telefono: String,
-
-    // La fecha de visita no está en el modelo, la eliminamos.
-
-    @SerialName("Id_Residente")
+    // La propiedad en C# es Id_Residente, que se convierte a id_Residente en JSON camelCase.
+    // Para evitar confusiones, podemos usar @SerialName.
+    @SerialName("id_Residente")
     val residenteId: Int
 )
 
@@ -55,7 +48,7 @@ data class User(
 
 
 //APIIIIIIIIII
-private const val BASE_URL_MIAPI = "https://73d4f78c41bc.ngrok-free.app"
+private const val BASE_URL_MIAPI = "https://49819bf01725.ngrok-free.app"
 
 private val retrofit = Retrofit.Builder()
     // Asegúrate que el convertidor puede ignorar llaves desconocidas en el JSON

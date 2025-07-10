@@ -1,12 +1,16 @@
 package com.example.proyecto.ui.screens
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -46,38 +50,59 @@ fun ProyectoApp() {
                 )
             }
             composable(AppScreen.GuestList.name) {
-                if (uiState is AppUiState.Success) {
-                    GuestListScreen(
-                        invitados = uiState.invitados,
-                        onAddGuestClick = { navController.navigate(AppScreen.RegisterGuest.name) },
-                        onLogoutClick = { appViewModel.logout() }
-                    )
+                when (val currentState = uiState) {
+                    // Muestra un indicador de carga mientras se obtienen los datos
+                    is AppUiState.Loading -> {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator()
+                        }
+                    }
+                    // Muestra la lista de invitados si todo salió bien
+                    is AppUiState.Success -> {
+                        GuestListScreen(
+                            invitados = currentState.invitados,
+                            onAddGuestClick = { navController.navigate(AppScreen.RegisterGuest.name) },
+                            onLogoutClick = { appViewModel.logout() }
+                        )
+                    }
+                    // Muestra un mensaje de error si algo falló
+                    is AppUiState.Error -> {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Text("Error al cargar los invitados: ${currentState.message}")
+                        }
+                    }
+                    // No hagas nada si la sesión está cerrada (SignedOut)
+                    is AppUiState.SignedOut -> {
+                        // No se muestra nada, la navegación debería redirigir al login.
+                    }
                 }
             }
-            // ...dentro del NavHost en ProyectoApp.kt
+
+            // Dentro de tu NavHost en ProyectoApp.kt
 
             composable(AppScreen.RegisterGuest.name) {
-                // Ya no necesitas pasar 'currentUserId' aquí
                 RegisterGuestScreen(
-                    onRegisterClick = { request ->
-                        // El ViewModel ya tiene el ID del usuario y lo usará internamente
-                        appViewModel.registrarInvitado(request) { invitadoCreado ->
+                    onRegisterClick = { nombreApellidoPair, telefono ->
+                        appViewModel.registrarInvitado(nombreApellidoPair, telefono) { invitadoCreado ->
                             if (invitadoCreado != null) {
-                                // La navegación al QR usando el token es correcta
                                 invitadoCreado.token?.let { token ->
                                     navController.navigate("${AppScreen.QrCode.name}/${token}")
                                 }
                             }
-                            // Opcional: Podrías añadir un "else" para mostrar un error si el invitado no se creó
                         }
-                    }
+                    },
+                    onNavigateUp = { navController.navigateUp() }
                 )
             }
+
+// Llamada a QrCodeScreen
             composable("${AppScreen.QrCode.name}/{qr_token}") { backStackEntry ->
                 val token = backStackEntry.arguments?.getString("qr_token") ?: ""
                 QrCodeScreen(
                     qrContent = token,
-                    viewModel = appViewModel
+                    viewModel = appViewModel,
+                    // Pasa la función para navegar hacia atrás
+                    onNavigateUp = { navController.navigateUp() }
                 )
             }
         }

@@ -1,6 +1,7 @@
 package com.example.proyecto.ui.screens
 
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -67,18 +68,28 @@ class AppViewModel : ViewModel() {
         }
     }
 
-    fun registrarInvitado(request: NuevoInvitadoRequest, onResult: (Invitado?) -> Unit) {
+    fun registrarInvitado(
+        requestData: Pair<String, String>, // Nombre y Apellido
+        telefono: String,
+        onResult: (Invitado?) -> Unit
+    ) {
         viewModelScope.launch {
-            try {
-                // Ya no pasamos el userId como parámetro, está en el request.
-                val invitadoCreado = AppApi.retrofitService.registrarInvitado(request)
-                // Refrescamos la lista de invitados.
-                getInvitados()
-                onResult(invitadoCreado)
-            } catch (e: Exception) {
-                // Aquí podrías manejar el error de forma más específica.
-                onResult(null)
-            }
+            currentUserId?.let { userId ->
+                try {
+                    val request = NuevoInvitadoRequest(
+                        nombre = requestData.first,
+                        apellidos = requestData.second,
+                        telefono = telefono,
+                        residenteId = userId
+                    )
+                    val invitadoCreado = AppApi.retrofitService.registrarInvitado(request)
+                    getInvitados()
+                    onResult(invitadoCreado)
+                } catch (e: Exception) {
+                    Log.e("AppViewModel", "Error al registrar invitado: ${e.message}")
+                    onResult(null)
+                }
+            } ?: onResult(null)
         }
     }
 

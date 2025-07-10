@@ -7,32 +7,22 @@ import kotlinx.serialization.Serializable
 @SuppressLint("UnsafeOptInUsageError")
 @Serializable
 data class Invitado(
-    // Mapea "Id_Invitado" del JSON a "id" en Kotlin
-    @SerialName("Id_Invitado")
+    @SerialName("id_Invitado") // Asegúrate que coincida con el JSON (puede ser "id_Invitado" o "idInvitado")
     val id: Int,
 
-    // Mapea "Nombre" a "nombre"
-    @SerialName("Nombre")
+    @SerialName("nombre")
     val nombre: String,
 
-    // Mapea "Apellidos" a "apellidos"
-    @SerialName("Apellidos")
+    @SerialName("apellidos")
     val apellidos: String,
 
-    // Mapea "Telefono" a "telefono"
-    @SerialName("Telefono")
+    @SerialName("telefono")
     val telefono: String,
 
-    // Mapea "Token", que puede ser nulo
-    @SerialName("Token")
+    @SerialName("token")
     val token: String?,
 
-    // Mapea "Id_Residente" a "residenteId"
-    @SerialName("Id_Residente")
-    val residenteId: Int,
-
-    // El objeto Residente anidado se omite si no lo envías desde la API,
-    // pero lo dejamos como nulo por si lo agregas en el futuro.
-    @SerialName("Residente")
-    val residente: Residente? = null
+    @SerialName("id_Residente")
+    val residenteId: Int
+    // El objeto Residente anidado se omite porque la API no lo envía en esta llamada.
 )
