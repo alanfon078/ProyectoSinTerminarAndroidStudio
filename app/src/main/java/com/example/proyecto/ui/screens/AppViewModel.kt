@@ -16,6 +16,11 @@ import com.journeyapps.barcodescanner.BarcodeEncoder
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
+import android.content.Context
+import android.content.Intent
+import androidx.core.content.FileProvider
+import java.io.File
+import java.io.FileOutputStream
 
 sealed interface AppUiState {
     object SignedOut : AppUiState
@@ -98,8 +103,44 @@ class AppViewModel : ViewModel() {
         return barcodeEncoder.encodeBitmap(qrContent, BarcodeFormat.QR_CODE, size, size)
     }
 
+    fun shareQrBitmap(context: Context, bitmap: Bitmap?) {
+        if (bitmap == null) return
+
+        try {
+            // 1. Guarda el bitmap en el directorio caché
+            val cachePath = File(context.cacheDir, "images")
+            cachePath.mkdirs()
+            val file = File(cachePath, "qr_code.png")
+            val fileOutputStream = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream)
+            fileOutputStream.close()
+
+            // 2. Obtiene la URI del archivo a través del FileProvider
+            val contentUri = FileProvider.getUriForFile(
+                context,
+                "${context.packageName}.fileprovider",
+                file
+            )
+
+            // 3. Crea la Intent para compartir
+            val shareIntent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_STREAM, contentUri)
+                type = "image/png"
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+
+            // 4. Inicia el selector de aplicaciones
+            val chooser = Intent.createChooser(shareIntent, "Compartir código QR vía...")
+            context.startActivity(chooser)
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     fun logout() {
-        currentUserId = null
         uiState = AppUiState.SignedOut
+        currentUserId = null
     }
 }

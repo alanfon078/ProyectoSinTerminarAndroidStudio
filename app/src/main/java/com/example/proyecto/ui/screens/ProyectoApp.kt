@@ -13,10 +13,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.proyecto.ui.screens.*
 
 // Enum para las rutas, evita errores de tipeo
 enum class AppScreen {
@@ -35,9 +35,36 @@ fun ProyectoApp() {
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Control de Acceso") })
+            TopAppBar(title = { Text("Control de Acceso de Invitados") })
         }
     ) { innerPadding ->
+
+        // --- LÓGICA DE NAVEGACIÓN ---
+
+        // 1. Efecto para NAVEGAR DESPUÉS DEL LOGIN
+        // Se activa cuando el ID del usuario cambia de null a un valor.
+        LaunchedEffect(appViewModel.currentUserId) {
+            if (appViewModel.currentUserId != null) {
+                navController.navigate(AppScreen.GuestList.name) {
+                    popUpTo(AppScreen.Login.name) { inclusive = true }
+                }
+            }
+        }
+
+        // 2. Efecto para NAVEGAR DESPUÉS DEL LOGOUT
+        // Se activa cuando el estado vuelve a ser 'SignedOut'.
+        LaunchedEffect(uiState) {
+            if (uiState is AppUiState.SignedOut) {
+                navController.navigate(AppScreen.Login.name) {
+                    popUpTo(navController.graph.findStartDestination().id) {
+                        inclusive = true
+                    }
+                }
+            }
+        }
+
+        // --- FIN DE LÓGICA DE NAVEGACIÓN ---
+
         NavHost(
             navController = navController,
             startDestination = AppScreen.Login.name,
@@ -51,13 +78,11 @@ fun ProyectoApp() {
             }
             composable(AppScreen.GuestList.name) {
                 when (val currentState = uiState) {
-                    // Muestra un indicador de carga mientras se obtienen los datos
                     is AppUiState.Loading -> {
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                             CircularProgressIndicator()
                         }
                     }
-                    // Muestra la lista de invitados si todo salió bien
                     is AppUiState.Success -> {
                         GuestListScreen(
                             invitados = currentState.invitados,
@@ -65,21 +90,16 @@ fun ProyectoApp() {
                             onLogoutClick = { appViewModel.logout() }
                         )
                     }
-                    // Muestra un mensaje de error si algo falló
                     is AppUiState.Error -> {
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                             Text("Error al cargar los invitados: ${currentState.message}")
                         }
                     }
-                    // No hagas nada si la sesión está cerrada (SignedOut)
                     is AppUiState.SignedOut -> {
-                        // No se muestra nada, la navegación debería redirigir al login.
+                        // No se muestra nada, el LaunchedEffect se encargará de redirigir
                     }
                 }
             }
-
-            // Dentro de tu NavHost en ProyectoApp.kt
-
             composable(AppScreen.RegisterGuest.name) {
                 RegisterGuestScreen(
                     onRegisterClick = { nombreApellidoPair, telefono ->
@@ -94,26 +114,13 @@ fun ProyectoApp() {
                     onNavigateUp = { navController.navigateUp() }
                 )
             }
-
-// Llamada a QrCodeScreen
             composable("${AppScreen.QrCode.name}/{qr_token}") { backStackEntry ->
                 val token = backStackEntry.arguments?.getString("qr_token") ?: ""
                 QrCodeScreen(
                     qrContent = token,
                     viewModel = appViewModel,
-                    // Pasa la función para navegar hacia atrás
                     onNavigateUp = { navController.navigateUp() }
                 )
-            }
-        }
-    }
-    // Cambiar el LaunchedEffect para que reaccione a cambios en el ID de usuario
-    LaunchedEffect(appViewModel.currentUserId) {
-        appViewModel.currentUserId?.let { userId ->
-            if (navController.currentDestination?.route != AppScreen.GuestList.name) {
-                navController.navigate(AppScreen.GuestList.name) {
-                    popUpTo(AppScreen.Login.name) { inclusive = true }
-                }
             }
         }
     }
