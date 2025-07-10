@@ -23,9 +23,6 @@ fun GuestListScreen(
             FloatingActionButton(onClick = onAddGuestClick) {
                 Icon(Icons.Default.Add, contentDescription = "Registrar Invitado")
             }
-        },
-        topBar = {
-            // La TopBar se maneja en ProyectoApp, puedes dejar esto vacío si quieres.
         }
     ) { padding ->
         Column(modifier = Modifier.padding(padding).padding(16.dp)) {
@@ -40,13 +37,12 @@ fun GuestListScreen(
                 items(invitados) { invitado ->
                     Card(modifier = Modifier.fillMaxWidth()) {
                         Column(modifier = Modifier.padding(16.dp)) {
-                            // **AQUÍ ESTÁN LOS CAMBIOS**
-                            // Usamos las propiedades correctas del nuevo modelo: nombre y apellidos.
+
                             Text(
                                 "${invitado.nombre} ${invitado.apellidos}", // Usamos "apellidos"
                                 style = MaterialTheme.typography.titleLarge
                             )
-                            // Mostramos solo el teléfono, ya que email y fecha no existen en el modelo.
+
                             Text("Teléfono: ${invitado.telefono}", style = MaterialTheme.typography.bodyMedium)
                         }
                     }

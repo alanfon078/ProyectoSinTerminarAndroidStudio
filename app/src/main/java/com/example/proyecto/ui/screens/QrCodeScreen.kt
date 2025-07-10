@@ -21,7 +21,7 @@ fun QrCodeScreen(
     viewModel: AppViewModel,
     onNavigateUp: () -> Unit
 ) {
-    val context = LocalContext.current // Obtiene el contexto de la UI
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -66,7 +66,7 @@ fun QrCodeScreen(
                         modifier = Modifier.size(300.dp)
                     )
                     Spacer(Modifier.height(24.dp))
-                    // Botón para compartir
+                    // Boton para compartir
                     Button(onClick = { viewModel.shareQrBitmap(context, bitmap) }) {
                         Icon(Icons.Default.Share, contentDescription = "Compartir")
                         Spacer(Modifier.width(8.dp))

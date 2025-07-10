@@ -70,11 +70,10 @@ android {
     }
 }
 
-// Reemplaza todo el bloque de dependencies en app/build.gradle.kts
-
 dependencies {
+
     // ---- LIBRERÍAS DE JETPACK COMPOSE ----
-    // El BOM gestiona las versiones de todas las librerías de Compose.
+    // El BOM gestiona las versiones de las librerias
     implementation(platform("androidx.compose:compose-bom:2024.06.00"))
     implementation("androidx.activity:activity-compose")
     implementation("androidx.compose.material3:material3")
@@ -82,25 +81,23 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose")
-
-    // ESTA ES LA LÍNEA CORRECTA Y ÚNICA PARA NAVEGACIÓN
     implementation("androidx.navigation:navigation-compose:2.7.7")
 
-    // Herramientas de depuración para Compose
+    // Herramientas de depuracion para Compose
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
-    // ---- LIBRERÍAS DE RED (RETROFIT) Y SERIALIZACIÓN ----
+    // LIBRERIAS RETROFIT Y SERIALIZACIÓN
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
 
-    // ---- LIBRERÍA DE QR ----
+    // LIBRERÍA DE QR
     implementation("com.google.zxing:core:3.5.3")
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 
-    // ---- CORE KTX ----
+    // CORE KTX
     implementation("androidx.core:core-ktx:1.13.1")
 }

@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 @SuppressLint("UnsafeOptInUsageError")
 @Serializable
 data class Invitado(
-    @SerialName("id_Invitado") // Asegúrate que coincida con el JSON (puede ser "id_Invitado" o "idInvitado")
+    @SerialName("id_Invitado")
     val id: Int,
 
     @SerialName("nombre")
@@ -24,5 +24,5 @@ data class Invitado(
 
     @SerialName("id_Residente")
     val residenteId: Int
-    // El objeto Residente anidado se omite porque la API no lo envía en esta llamada.
+
 )

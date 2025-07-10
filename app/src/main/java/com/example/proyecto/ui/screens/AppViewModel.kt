@@ -40,10 +40,9 @@ class AppViewModel : ViewModel() {
         viewModelScope.launch {
             uiState = AppUiState.Loading
             try {
-                // La llamada a login parece correcta.
+
                 val user = AppApi.retrofitService.login(LoginRequest(usuario, contrasena))
                 currentUserId = user.id
-                // Llamamos a getInvitados después de un login exitoso.
                 getInvitados()
             } catch (e: Exception) {
                 uiState = AppUiState.Error(
@@ -68,13 +67,13 @@ class AppViewModel : ViewModel() {
                     uiState = AppUiState.Error(message =  "Error al cargar invitados: ${e.message}")
                 }
             } ?: run {
-                uiState = AppUiState.SignedOut // Si no hay usuario, cerramos sesión.
+                uiState = AppUiState.SignedOut
             }
         }
     }
 
     fun registrarInvitado(
-        requestData: Pair<String, String>, // Nombre y Apellido
+        requestData: Pair<String, String>,
         telefono: String,
         onResult: (Invitado?) -> Unit
     ) {
@@ -107,7 +106,6 @@ class AppViewModel : ViewModel() {
         if (bitmap == null) return
 
         try {
-            // 1. Guarda el bitmap en el directorio caché
             val cachePath = File(context.cacheDir, "images")
             cachePath.mkdirs()
             val file = File(cachePath, "qr_code.png")
@@ -115,14 +113,14 @@ class AppViewModel : ViewModel() {
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream)
             fileOutputStream.close()
 
-            // 2. Obtiene la URI del archivo a través del FileProvider
+
             val contentUri = FileProvider.getUriForFile(
                 context,
                 "${context.packageName}.fileprovider",
                 file
             )
 
-            // 3. Crea la Intent para compartir
+
             val shareIntent = Intent().apply {
                 action = Intent.ACTION_SEND
                 putExtra(Intent.EXTRA_STREAM, contentUri)
@@ -130,7 +128,7 @@ class AppViewModel : ViewModel() {
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
 
-            // 4. Inicia el selector de aplicaciones
+
             val chooser = Intent.createChooser(shareIntent, "Compartir código QR vía...")
             context.startActivity(chooser)
 

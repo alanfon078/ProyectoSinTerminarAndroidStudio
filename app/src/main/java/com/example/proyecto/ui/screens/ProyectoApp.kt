@@ -18,7 +18,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 
-// Enum para las rutas, evita errores de tipeo
+// Enumerados para cada ruta
 enum class AppScreen {
     Login,
     GuestList,
@@ -39,10 +39,7 @@ fun ProyectoApp() {
         }
     ) { innerPadding ->
 
-        // --- LÓGICA DE NAVEGACIÓN ---
-
-        // 1. Efecto para NAVEGAR DESPUÉS DEL LOGIN
-        // Se activa cuando el ID del usuario cambia de null a un valor.
+        // Se activa cuando se inicia sesion
         LaunchedEffect(appViewModel.currentUserId) {
             if (appViewModel.currentUserId != null) {
                 navController.navigate(AppScreen.GuestList.name) {
@@ -51,8 +48,7 @@ fun ProyectoApp() {
             }
         }
 
-        // 2. Efecto para NAVEGAR DESPUÉS DEL LOGOUT
-        // Se activa cuando el estado vuelve a ser 'SignedOut'.
+        // Se activa cuando se cierra sesion
         LaunchedEffect(uiState) {
             if (uiState is AppUiState.SignedOut) {
                 navController.navigate(AppScreen.Login.name) {
@@ -62,8 +58,6 @@ fun ProyectoApp() {
                 }
             }
         }
-
-        // --- FIN DE LÓGICA DE NAVEGACIÓN ---
 
         NavHost(
             navController = navController,
@@ -96,7 +90,7 @@ fun ProyectoApp() {
                         }
                     }
                     is AppUiState.SignedOut -> {
-                        // No se muestra nada, el LaunchedEffect se encargará de redirigir
+
                     }
                 }
             }
