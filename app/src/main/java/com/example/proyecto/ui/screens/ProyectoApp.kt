@@ -54,14 +54,21 @@ fun ProyectoApp() {
                     )
                 }
             }
+            // ...dentro del NavHost en ProyectoApp.kt
+
             composable(AppScreen.RegisterGuest.name) {
+                // Ya no necesitas pasar 'currentUserId' aquí
                 RegisterGuestScreen(
                     onRegisterClick = { request ->
+                        // El ViewModel ya tiene el ID del usuario y lo usará internamente
                         appViewModel.registrarInvitado(request) { invitadoCreado ->
                             if (invitadoCreado != null) {
-                                // Navega a la pantalla del QR, pasando el token del invitado
-                                navController.navigate("${AppScreen.QrCode.name}/${invitadoCreado.token}")
+                                // La navegación al QR usando el token es correcta
+                                invitadoCreado.token?.let { token ->
+                                    navController.navigate("${AppScreen.QrCode.name}/${token}")
+                                }
                             }
+                            // Opcional: Podrías añadir un "else" para mostrar un error si el invitado no se creó
                         }
                     }
                 )

@@ -25,7 +25,7 @@ fun GuestListScreen(
             }
         },
         topBar = {
-
+            // La TopBar se maneja en ProyectoApp, puedes dejar esto vacío si quieres.
         }
     ) { padding ->
         Column(modifier = Modifier.padding(padding).padding(16.dp)) {
@@ -40,13 +40,14 @@ fun GuestListScreen(
                 items(invitados) { invitado ->
                     Card(modifier = Modifier.fillMaxWidth()) {
                         Column(modifier = Modifier.padding(16.dp)) {
+                            // **AQUÍ ESTÁN LOS CAMBIOS**
+                            // Usamos las propiedades correctas del nuevo modelo: nombre y apellidos.
                             Text(
-                                "${invitado.nombre} ${invitado.apellido}",
+                                "${invitado.nombre} ${invitado.apellidos}", // Usamos "apellidos"
                                 style = MaterialTheme.typography.titleLarge
                             )
-                            Text("Email: ${invitado.email}", style = MaterialTheme.typography.bodyMedium)
+                            // Mostramos solo el teléfono, ya que email y fecha no existen en el modelo.
                             Text("Teléfono: ${invitado.telefono}", style = MaterialTheme.typography.bodyMedium)
-                            Text("Fecha de Visita: ${invitado.fechaVisita}", style = MaterialTheme.typography.bodyMedium)
                         }
                     }
                 }

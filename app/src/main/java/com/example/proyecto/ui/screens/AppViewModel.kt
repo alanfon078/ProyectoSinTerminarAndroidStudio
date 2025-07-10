@@ -28,24 +28,22 @@ class AppViewModel : ViewModel() {
     var uiState: AppUiState by mutableStateOf(AppUiState.SignedOut)
         private set
 
-    var currentUserId: Int? by mutableStateOf(null) // Guarda el ID en lugar del token
+    var currentUserId: Int? by mutableStateOf(null)
 
-
-    // Modificar la función login
     fun login(usuario: String, contrasena: String) {
         viewModelScope.launch {
             uiState = AppUiState.Loading
             try {
+                // La llamada a login parece correcta.
                 val user = AppApi.retrofitService.login(LoginRequest(usuario, contrasena))
                 currentUserId = user.id
+                // Llamamos a getInvitados después de un login exitoso.
                 getInvitados()
             } catch (e: Exception) {
                 uiState = AppUiState.Error(
                     message = when {
-                        e is HttpException && e.code() == 401 ->
-                            "Usuario o contraseña incorrectos"
-                        e is IOException ->
-                            "Error de conexión. Verifique su internet"
+                        e is HttpException && e.code() == 401 -> "Usuario o contraseña incorrectos"
+                        e is IOException -> "Error de conexión. Verifique su internet"
                         else -> "Error desconocido: ${e.message}"
                     }
                 )
@@ -61,25 +59,26 @@ class AppViewModel : ViewModel() {
                     val invitados = AppApi.retrofitService.getInvitados(userId)
                     uiState = AppUiState.Success(invitados)
                 } catch (e: Exception) {
-                    uiState = AppUiState.Error(message =  "Error inesperado: ${e.message}")
+                    uiState = AppUiState.Error(message =  "Error al cargar invitados: ${e.message}")
                 }
             } ?: run {
-                uiState = AppUiState.SignedOut
+                uiState = AppUiState.SignedOut // Si no hay usuario, cerramos sesión.
             }
         }
     }
 
     fun registrarInvitado(request: NuevoInvitadoRequest, onResult: (Invitado?) -> Unit) {
         viewModelScope.launch {
-            currentUserId?.let { userId ->
-                try {
-                    val invitadoCreado = AppApi.retrofitService.registrarInvitado(userId, request)
-                    getInvitados()
-                    onResult(invitadoCreado)
-                } catch (e: Exception) {
-                    onResult(null)
-                }
-            } ?: onResult(null)
+            try {
+                // Ya no pasamos el userId como parámetro, está en el request.
+                val invitadoCreado = AppApi.retrofitService.registrarInvitado(request)
+                // Refrescamos la lista de invitados.
+                getInvitados()
+                onResult(invitadoCreado)
+            } catch (e: Exception) {
+                // Aquí podrías manejar el error de forma más específica.
+                onResult(null)
+            }
         }
     }
 

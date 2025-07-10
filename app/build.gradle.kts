@@ -37,6 +37,10 @@ android {
         }
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -66,60 +70,37 @@ android {
     }
 }
 
+// Reemplaza todo el bloque de dependencies en app/build.gradle.kts
+
 dependencies {
-
-    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
-    implementation("com.squareup.okhttp3:okhttp:4.11.0")
-
-    // Kotlin serialization
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
-
-    // Retrofit
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-
-    // Retrofit with Scalar Converter
-    implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
-
-    // Import the Compose BOM
-    implementation(platform("androidx.compose:compose-bom:2023.06.01"))
-    implementation("androidx.activity:activity-compose:1.7.2")
+    // ---- LIBRERÍAS DE JETPACK COMPOSE ----
+    // El BOM gestiona las versiones de todas las librerías de Compose.
+    implementation(platform("androidx.compose:compose-bom:2024.06.00"))
+    implementation("androidx.activity:activity-compose")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.core:core-ktx:1.10.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
-    implementation("com.google.zxing:core:3.5.3")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose")
 
-
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
-    debugImplementation("androidx.compose.ui:ui-tooling")
-
-//    implementation("androidx.core:core-ktx:1.13.1")
-//    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.3")
-//    implementation("androidx.activity:activity-compose:1.9.0")
-//
-//    implementation(platform("androidx.compose:compose-bom:2024.06.00"))
-//    implementation("androidx.compose.ui:ui")
-//    implementation("androidx.compose.ui:ui-graphics")
-//    implementation("androidx.compose.ui:ui-tooling-preview")
-//    implementation("androidx.compose.material3:material3")
-//    debugImplementation("androidx.compose.ui:ui-tooling")
-//    debugImplementation("androidx.compose.ui:ui-test-manifest")
-//
-//    // ViewModel y Navegación para Compose
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.3")
+    // ESTA ES LA LÍNEA CORRECTA Y ÚNICA PARA NAVEGACIÓN
     implementation("androidx.navigation:navigation-compose:2.7.7")
-//
-//    // Retrofit y Serialización
-//    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-//    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
-//    //implementation ("com.squareup.retrofit2:converter-kotlinx-serialization:latest.version")
-//    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
-//    implementation("com.squareup.okhttp3:okhttp:4.11.0")
-//    implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
-//
-//    // --- LIBRERÍA DE QR QUE FALTABA ---
+
+    // Herramientas de depuración para Compose
+    debugImplementation("androidx.compose.ui:ui-tooling")
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+    // ---- LIBRERÍAS DE RED (RETROFIT) Y SERIALIZACIÓN ----
+    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
+    implementation("com.squareup.okhttp3:okhttp:4.11.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
+
+    // ---- LIBRERÍA DE QR ----
+    implementation("com.google.zxing:core:3.5.3")
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 
+    // ---- CORE KTX ----
+    implementation("androidx.core:core-ktx:1.13.1")
 }

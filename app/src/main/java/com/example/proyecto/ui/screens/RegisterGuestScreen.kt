@@ -12,14 +12,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.proyecto.network.NuevoInvitadoRequest
 
+// ... (importaciones)
+
 @Composable
 fun RegisterGuestScreen(onRegisterClick: (NuevoInvitadoRequest) -> Unit) {
-    var id by remember { mutableStateOf("") }
+    // El "id" se genera en el backend, lo eliminamos del formulario.
     var nombre by remember { mutableStateOf("") }
     var apellido by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
     var telefono by remember { mutableStateOf("") }
-    var fechaVisita by remember { mutableStateOf("") }
+    // Eliminamos las variables para email y fechaVisita
 
     Column(
         modifier = Modifier
@@ -29,30 +30,29 @@ fun RegisterGuestScreen(onRegisterClick: (NuevoInvitadoRequest) -> Unit) {
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text("Registrar Nuevo Invitado", style = MaterialTheme.typography.headlineMedium)
-        OutlinedTextField(value = id, onValueChange = { id = it }, label = { Text("id") }, modifier = Modifier.fillMaxWidth())
+
+        // Eliminamos el campo para el ID
         OutlinedTextField(value = nombre, onValueChange = { nombre = it }, label = { Text("Nombre") }, modifier = Modifier.fillMaxWidth())
         OutlinedTextField(value = apellido, onValueChange = { apellido = it }, label = { Text("Apellido") }, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(value = email, onValueChange = { email = it }, label = { Text("Email") }, modifier = Modifier.fillMaxWidth())
         OutlinedTextField(value = telefono, onValueChange = { telefono = it }, label = { Text("Teléfono") }, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(value = fechaVisita, onValueChange = { fechaVisita = it }, label = { Text("Fecha de Visita (YYYY-MM-DD)") }, modifier = Modifier.fillMaxWidth())
+        // Eliminamos los TextFields para email y fechaVisita
+
         Spacer(Modifier.height(16.dp))
         Button(
             onClick = {
                 val request = NuevoInvitadoRequest(
-                    id = id,
                     nombre = nombre,
-                    apellido = apellido,
-                    email = email,
+                    apellidos = apellido, // Corregido a "apellidos"
                     telefono = telefono,
-                    fechaVisita = fechaVisita,
-                    residenteId = 4
+                    residenteId = 4 // NOTA: Este ID sigue siendo fijo. Deberías pasarlo dinámicamente.
                 )
                 onRegisterClick(request)
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            // Habilitamos el botón si los campos necesarios están llenos.
+            enabled = nombre.isNotBlank() && apellido.isNotBlank() && telefono.isNotBlank()
         ) {
             Text("Registrar y Generar QR")
         }
-
     }
 }
